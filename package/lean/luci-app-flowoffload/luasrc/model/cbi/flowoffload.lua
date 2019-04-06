@@ -43,7 +43,9 @@ dns.description = translate("Enable DNS Cache Acceleration and anti ISP DNS poll
 
 o = s:option(ListValue, "dnscache_enable", translate("Resolve Dns Mode"), translate("AdGuardHome After setting up, shut down DNS acceleration normally and save configuration file") .. button)
 o:value("1", translate("Use Pdnsd query and cache"))
+if nixio.fs.access("/usr/bin/dnsforwarder") then
 o:value("2", translate("Use dnsforwarder query and cache"))
+end
 if nixio.fs.access("/usr/bin/AdGuardHome") then
 o:value("3", translate("Use AdGuardHome query and cache"))
 end

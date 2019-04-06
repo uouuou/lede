@@ -13,13 +13,20 @@ dns:
   ratelimit: 20
   ratelimit_whitelist: []
   refuse_any: true
-  bootstrap_dns: 8.8.8.8:53
+  bootstrap_dns: 8.8.4.4:53
+  all_servers: true
   parental_sensitivity: 0
   parental_enabled: false
   safesearch_enabled: false
   safebrowsing_enabled: false
   upstream_dns:
   - 127.0.0.1:5383
+  - tls://1dot1dot1dot1.cloudflare-dns.com
+  - https://cloudflare-dns.com/dns-query
+  - https://1.0.0.1/dns-query
+  - https://dns.quad9.net/dns-query
+  - tcp://8.8.8.8
+  - tcp://8.8.4.4
 tls:
   enabled: false
   server_name: ""

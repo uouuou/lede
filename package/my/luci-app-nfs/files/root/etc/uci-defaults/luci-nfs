@@ -15,7 +15,8 @@ EOF
 
 /etc/init.d/portmap disable >/dev/null 2>&1
 /etc/init.d/nfsd disable >/dev/null 2>&1
-/etc/init.d/nfs enable >/dev/null 2>&1
+/etc/init.d/nfs stop >/dev/null 2>&1
+/etc/init.d/nfs disable >/dev/null 2>&1
 rm -f /tmp/luci-indexcache
 
 exit 0

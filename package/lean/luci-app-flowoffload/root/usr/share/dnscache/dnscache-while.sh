@@ -24,6 +24,9 @@ if [ $dns_enable -eq 1 ]; then
 			AdGuardHome -c /etc/AdGuardHome/AdGuardHome.yaml -w /etc/AdGuardHome >/dev/null 2>&1 &
 			echo "$curtime 重启服务！" >> ${logfile}
 		fi
+		if ! pidof dnscache>/dev/null; then
+			dnscache -f /var/run/dnscache/dnscache.conf -d
+		fi
 	else
 		if ! pidof dnscache>/dev/null; then
 			if [ $dnscache_enable = "1" ];  then

@@ -69,7 +69,6 @@ change_dns() {
 	uci delete dhcp.@dnsmasq[0].resolvfile
 	uci set dhcp.@dnsmasq[0].noresolv=1
 	uci commit dhcp
-	/etc/init.d/dnsmasq restart > /dev/null 2>&1
 
 }
 
@@ -82,7 +81,6 @@ revert_dns() {
 		uci delete dhcp.@dnsmasq[0].resolvfile
 		uci delete dhcp.@dnsmasq[0].noresolv
 		uci commit dhcp
-		/etc/init.d/dnsmasq restart > /dev/null 2>&1
 	fi
 }
 
@@ -90,35 +88,47 @@ start() {
 	enable=$(uci get clash.config.enabled 2>/dev/null)
 	# 启动 Clash
 	if [ $enable -eq 1 ]; then
-	echo "enable"
-	$CLASH -d "$CLASH_CONFIG" > /dev/null 2>&1 &
-		sleep 3
-		if pidof clash>/dev/null; then
+		del_rule
+		revert_dns
+
+		if pidof clash >/dev/null; then
+			kill -9 $(ps | grep clash-watchdog.sh | grep -v grep | awk '{print $1}') >/dev/null 2>&1
+			kill $(pidof clash) >/dev/null 2>&1 || kill -9 $(ps | grep clash | grep -v grep | awk '{print $1}') >/dev/null 2>&1
+			sleep 2
+		fi
+
+		echo "enable"
+		nohup $CLASH -d $CLASH_CONFIG > /var/log/clash.file 2>&1 &
+
+		if pidof clash >/dev/null; then
+			sleep 3
 			add_rule
 			change_dns
+			/etc/init.d/dnsmasq restart > /dev/null 2>&1
 			nohup /usr/share/clash/clash-watchdog.sh > /var/log/clash.file 2>&1 &
 			if [ usr/bin/clash ] ;then
 				[ -z "$(grep -w "/usr/share/clash/clash_update.sh" /etc/crontabs/root)" ] && echo "0 4 * * * /usr/share/clash/clash_update.sh" >> /etc/crontabs/root
 				crontab /etc/crontabs/root
 			fi
 		else
-		echo "clash无法启动"
+			echo "clash无法启动"
 		fi
-	else
-		stop
 	fi
 }
 
 stop() {
-	del_rule
-	revert_dns
-	# 关闭 进程守护
-	kill -9 $(ps | grep clash-watchdog.sh | grep -v grep | awk '{print $1}') >/dev/null 2>&1
-	# 关闭 Clash
-	kill $(pidof clash) >/dev/null 2>&1 || kill -9 $(ps | grep clash | grep -v grep | awk '{print $1}') >/dev/null 2>&1
-	sed -i '/clash_update/d' /etc/crontabs/root
-	/etc/init.d/cron restart
-	echo "stop!"
+	if [ $enable -ne 0 ]; then
+		del_rule
+		revert_dns
+		/etc/init.d/dnsmasq restart > /dev/null 2>&1
+		# 关闭 进程守护
+		kill -9 $(ps | grep clash-watchdog.sh | grep -v grep | awk '{print $1}') >/dev/null 2>&1
+		# 关闭 Clash
+		kill $(pidof clash) >/dev/null 2>&1 || kill -9 $(ps | grep clash | grep -v grep | awk '{print $1}') >/dev/null 2>&1
+		sed -i '/clash_update/d' /etc/crontabs/root
+		/etc/init.d/cron restart
+		echo "stop!"
+	fi
 
 }
 

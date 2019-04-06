@@ -7,7 +7,7 @@ include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=LuCI Support for clash
 LUCI_DEPENDS:= +clash
-PKG_VERSION:=1.03
+PKG_VERSION:=1.04
 
 include $(TOPDIR)/feeds/luci/luci.mk
 

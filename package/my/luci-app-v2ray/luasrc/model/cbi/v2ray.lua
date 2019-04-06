@@ -87,7 +87,9 @@ safe_dns_tcp.rmempty = false
 
 pdnsd_enable = s:taboption("basic",ListValue, "pdnsd_enable", translate("Resolve Dns Mode"))
 pdnsd_enable:value("Pdnsd")
+if nixio.fs.access("/usr/bin/dnsforwarder") then
 pdnsd_enable:value("dnsforwarder")
+end
 
 s:tab("main",  translate("Server Setting"))
 

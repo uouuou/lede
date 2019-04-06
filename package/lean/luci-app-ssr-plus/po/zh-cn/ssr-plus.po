@@ -520,3 +520,27 @@ msgstr "禁止BT端口走代理"
 
 msgid "BT Port"
 msgstr "BT端口"
+
+msgid "Oversea List"
+msgstr "国内域名列表"
+
+msgid "Oversea Custom List"
+msgstr "回国模式自定义列表"
+
+msgid "Add the file name. JSON after the path."
+msgstr "路径后面加入文件名.json."
+
+msgid "Use Config File"
+msgstr "使用配置文件"
+
+msgid "Config File Path"
+msgstr "配置文件路径"
+
+msgid "Create upload file error."
+msgstr "上传文件失败。"
+
+msgid "File saved to"
+msgstr "文件已保存到"
+
+msgid "No specify upload file."
+msgstr "未指定上传文件"

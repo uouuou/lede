@@ -156,7 +156,7 @@ LogOn false
 LogFileThresholdLength 102400
 LogFileFolder /var/run/dnscache
 UDPLocal $localserver
-UDPGroup $DNS_SERVER,$IPV6DNS_SERVER * no
+UDPGroup $DNS_SERVER,$IPV6DNS_SERVER * on
 GroupFile
 BlockIP 243.185.187.39,46.82.174.68,37.61.54.158,93.46.8.89,59.24.3.173,203.98.7.65,8.7.198.45,78.16.49.15,159.106.121.75,69.63.187.12,31.13.76.8,31.13.64.49
 IPSubstituting
