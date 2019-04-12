@@ -36,7 +36,7 @@ i=0
 
 GLOBAL_SERVER=$(uci_get_by_type global global_server)
 server=$(uci_get_by_name $GLOBAL_SERVER server)
-lkcp_port=$(uci_get_by_name $GLOBAL_SERVER kcp_port)
+kcp_port=$(uci_get_by_name $GLOBAL_SERVER kcp_port)
 server_port=$(uci_get_by_name $GLOBAL_SERVER server_port)
 password=$(uci_get_by_name $GLOBAL_SERVER kcp_password)
 kcp_param=$(uci_get_by_name $GLOBAL_SERVER kcp_param)
