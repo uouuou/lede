@@ -14,9 +14,8 @@ else
 	m = Map("oscam", translate("oscam"), "%s - %s" %{translate("oscam"), translate("<strong><font color=\"red\">Not Running</font></strong>")})
 end
 
-m = Map("oscam", translate("oscam") .. button)
 -- Basic
-s = m:section(TypedSection, "oscam", translate("Settings"), translate("General Settings"))
+s = m:section(TypedSection, "oscam", translate("Settings"), translate("General Settings") .. button)
 s.anonymous = true
 
 ---- Eanble
