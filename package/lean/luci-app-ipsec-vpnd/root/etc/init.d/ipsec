@@ -424,13 +424,4 @@ EOF
 	procd_set_param respawn
 
 	procd_close_instance
-	
-	if [ "$vt_enabled" = 1 ];  then
-		iptables -t nat -A POSTROUTING -j MASQUERADE
-		iptables -I FORWARD -p tcp --syn -i ppp+ -j TCPMSS --set-mss 1356
-	else
-		iptables -t nat -D POSTROUTING -j MASQUERADE
-		iptables -D FORWARD -p tcp --syn -i ppp+ -j TCPMSS --set-mss 1356
-	fi		
-
 }

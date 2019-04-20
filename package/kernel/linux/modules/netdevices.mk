@@ -641,6 +641,7 @@ endef
 
 $(eval $(call KernelPackage,ixgbevf))
 
+
 define KernelPackage/i40e
   SUBMENU:=$(NETWORK_DEVICES_MENU)
   TITLE:=Intel(R) Ethernet Controller XL710 Family support
@@ -655,7 +656,7 @@ define KernelPackage/i40e/description
  Kernel modules for Intel(R) Ethernet Controller XL710 Family 40 Gigabit Ethernet adapters.
 endef
 
- $(eval $(call KernelPackage,i40e))
+$(eval $(call KernelPackage,i40e))
 
 
 define KernelPackage/i40evf

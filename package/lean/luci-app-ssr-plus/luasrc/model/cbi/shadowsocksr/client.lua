@@ -57,6 +57,7 @@ o:value("gfw", translate("GFW List Mode"))
 o:value("router", translate("IP Route Mode"))
 o:value("routers", translate("Oversea IP Route Mode"))
 o:value("oversea", translate("Oversea GFW List Mode"))
+o:value("all", translate("Global Mode"))
 o.default = gfw
 
 o = s:option(ListValue, "pdnsd_enable", translate("Resolve Dns Mode"))

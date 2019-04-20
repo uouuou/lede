@@ -18,6 +18,11 @@ s = m:section(TypedSection, "base_arg", "")
 s.addremove = false
 s.anonymous = true
 
+---- Eanble
+enable = s:option(Flag, "enabled", translate("Enable"), translate("Enable or disable server"))
+enable.default = 0
+enable.rmempty = false
+
 email = s:option(Value, "login_email", translate("登录邮箱"),"登录DNSPOD的用户名")
 pass = s:option(Value, "login_password", translate("登录密码"),"登录DNSPOD的密码")
 pass.password=true

@@ -191,8 +191,8 @@ EOF
 }
 
 stop_dnscache() {
-	kill $(pidof AdGuardHome) >/dev/null 2>&1 || kill -9 $(ps | grep AdGuardHome | grep -v grep | awk '{print $1}') >/dev/null 2>&1
-	kill $(pidof dnscache) >/dev/null 2>&1 || kill -9 $(ps | grep dnscache | grep -v grep | awk '{print $1}') >/dev/null 2>&1
+	kill $(pidof AdGuardHome) >/dev/null 2>&1 || kill -9 $(ps | grep AdGuardHome | grep -v "grep" | awk '{print $1}') >/dev/null 2>&1
+	kill $(pidof dnscache) >/dev/null 2>&1 || kill -9 $(ps | grep dnscache | grep -v "grep" | awk '{print $1}') >/dev/null 2>&1
 	rm -rf /var/run/dnscache
 	rm -rf /var/dnscache
 	echo "Stop DNS Cache"
@@ -249,7 +249,7 @@ start_service() {
 	fi
   
 	if [ $dns -eq 1 ];  then
-		kill -9 $(ps | grep dnscache-while.sh | grep -v grep | awk '{print $1}') >/dev/null 2>&1
+		kill -9 $(ps | grep dnscache-while.sh | grep -v "grep" | awk '{print $1}') >/dev/null 2>&1
 		stop_dnscache
 		sleep 1
 		if [ $dnscache_enable = "1" ];  then
@@ -264,7 +264,7 @@ start_service() {
 	else
 		stop_dnscache
 		revert_dns
-		kill -9 $(ps | grep dnscache-while.sh | grep -v grep | awk '{print $1}') >/dev/null 2>&1
+		kill -9 $(ps | grep dnscache-while.sh | grep -v "grep" | awk '{print $1}') >/dev/null 2>&1
 	fi
   
 	if [ $bbr -eq 1 ];  then
@@ -283,7 +283,7 @@ stop_service(){
     [ $enable -ne 1 ] && rmmod fast_classifier >/dev/null 2>&1 
 	stop_dnscache
     revert_dns
-	kill -9 $(ps | grep dnscache-while.sh | grep -v grep | awk '{print $1}') >/dev/null 2>&1
+	kill -9 $(ps | grep dnscache-while.sh | grep -v "grep" | awk '{print $1}') >/dev/null 2>&1
 	if [ "$DNSMASQ_RESTART" = N ]; then
 		/etc/init.d/dnsmasq restart
 	fi

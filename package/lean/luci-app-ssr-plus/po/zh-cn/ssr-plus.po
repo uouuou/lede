@@ -185,7 +185,7 @@ msgid "Running Status"
 msgstr "运行状态"
 
 msgid "Global Client"
-msgstr "全局客户端"
+msgstr "TCP透明代理"
 
 msgid "Global SSR Server"
 msgstr "SSR服务端"
@@ -234,6 +234,9 @@ msgstr "海外用户回国IP路由模式"
 
 msgid "Oversea GFW List Mode"
 msgstr "海外用户回国域名列表模式"
+
+msgid "Global Mode"
+msgstr "全局模式"
 
 msgid "Router Proxy"
 msgstr "路由器访问控制"

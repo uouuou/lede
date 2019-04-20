@@ -33,17 +33,17 @@ stop(){
 	rm -rf /tmp/softethervpn
 	if [ $vpn_server_enabled -ne 1 ]; then
 	/etc/init.d/softethervpnserver stop
-	kill $(pidof vpnserver) >/dev/null 2>&1 || kill -9 $(ps | grep vpnserver | grep -v grep | awk '{print $1}') >/dev/null 2>&1
+	kill $(pidof vpnserver) >/dev/null 2>&1 || kill -9 $(ps | grep vpnserver | grep -v "grep" | awk '{print $1}') >/dev/null 2>&1
 	fi
 
 	if [ $vpn_bridge_enabled -ne 1 ]; then
 	/etc/init.d/softethervpnbridge stop
-	kill $(pidof vpnbridge) >/dev/null 2>&1 || kill -9 $(ps | grep vpnbridge | grep -v grep | awk '{print $1}') >/dev/null 2>&1
+	kill $(pidof vpnbridge) >/dev/null 2>&1 || kill -9 $(ps | grep vpnbridge | grep -v "grep" | awk '{print $1}') >/dev/null 2>&1
 	fi
 
 	if [ $vpn_client_enabled -ne 1 ]; then
 	/etc/init.d/softethervpnclient stop
-	kill $(pidof vpnclient) >/dev/null 2>&1 || kill -9 $(ps | grep vpnclient | grep -v grep | awk '{print $1}') >/dev/null 2>&1
+	kill $(pidof vpnclient) >/dev/null 2>&1 || kill -9 $(ps | grep vpnclient | grep -v "grep" | awk '{print $1}') >/dev/null 2>&1
 	fi
 
 }

@@ -178,10 +178,14 @@ execUpdate() {
 
 case $1 in
 	--svc)
-		is_svc=1;
-		printMsg 'Start in Service mode';
-		printMsg "domain: ${domainname}, sub_domains: ${sub_domains}";
-		execSvc;;
+		enable=$(uci get dnspod.base_arg.enabled 2>/dev/null)
+		if [ $enable -eq 1 ]; then
+			is_svc=1;
+			printMsg 'Start in Service mode';
+			printMsg "domain: ${domainname}, sub_domains: ${sub_domains}";
+			execSvc
+		fi
+	;;
 	--ipv6)
 		is_svc=0;
 		printMsg "Start update HE Tunnel Broker";

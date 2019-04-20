@@ -90,7 +90,7 @@ start() {
 	local dns2=$(uci get sfe.config.dns 2>/dev/null)
 	# 启动 Clash
 	if [ $enable -eq 1 ]; then
-		kill -9 $(ps | grep clash-watchdog.sh | grep -v grep | awk '{print $1}') >/dev/null 2>&1
+		kill -9 $(ps | grep clash-watchdog.sh | grep -v "grep" | awk '{print $1}') >/dev/null 2>&1
 		if [ $dns1 -eq 1 ];  then
 			uci set flowoffload.@flow[0].dns=0
 			uci commit flowoffload
@@ -107,7 +107,7 @@ start() {
 		revert_dns
 
 		if pidof clash >/dev/null; then
-			kill $(pidof clash) >/dev/null 2>&1 || kill -9 $(ps | grep clash | grep -v grep | awk '{print $1}') >/dev/null 2>&1
+			kill $(pidof clash) >/dev/null 2>&1 || kill -9 clash >/dev/null 2>&1
 			sleep 2
 		fi
 
@@ -132,10 +132,10 @@ start() {
 }
 
 stop() {
-	kill -9 $(ps | grep clash-watchdog.sh | grep -v grep | awk '{print $1}') >/dev/null 2>&1
+	kill -9 $(ps | grep clash-watchdog.sh | grep -v "grep" | awk '{print $1}') >/dev/null 2>&1
 	if pidof clash >/dev/null; then
 		# 关闭 Clash
-		kill $(pidof clash) >/dev/null 2>&1 || kill -9 $(ps | grep clash | grep -v grep | awk '{print $1}') >/dev/null 2>&1
+		kill $(pidof clash) >/dev/null 2>&1 || kill -9 clash >/dev/null 2>&1
 		del_rule
 		revert_dns
 		/etc/init.d/dnsmasq restart > /dev/null 2>&1
