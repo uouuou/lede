@@ -231,10 +231,26 @@ TARGET_DEVICES += iodata_wn-gx300gr
 define Device/k2p
   DTS := K2P
   IMAGE_SIZE := $(ralink_default_fw_size_16M)
+  DEVICE_PACKAGES := mtk-luci-plugin kmod-mt_wifi MTK_FIRST_IF_MT7615E MTK_WIFI_MODE_AP
   DEVICE_TITLE := Phicomm K2P
-  DEVICE_PACKAGES := kmod-mt7615 wpad-basic
 endef
 TARGET_DEVICES += k2p
+
+define Device/xiaomi_mir3p
+  DTS := MIR3P
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  KERNEL_SIZE:= 4096k
+  UBINIZE_OPTS := -E 5
+  IMAGE_SIZE := $(ralink_default_fw_size_32M)
+  DEVICE_TITLE := Xiaomi Mi Router 3 Pro
+  IMAGES += factory.bin
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | check-size $$$$(IMAGE_SIZE)
+  DEVICE_PACKAGES := \
+	kmod-usb3 kmod-usb-ledtrig-usbport wpad-basic uboot-envtools
+endef
+TARGET_DEVICES += xiaomi_mir3p
 
 define Device/mir3g
   DTS := MIR3G

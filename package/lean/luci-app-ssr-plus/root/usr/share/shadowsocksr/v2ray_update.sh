@@ -52,21 +52,26 @@ if [ $? -eq 0 ];then
 				let "a = a + 1"
 			done
 	
-			killall -q -9 v2ray
+			if [ -f $bin_dir/v2ray-linux-"$ARCH"*.zip ]; then
+				echo "$(date "+%Y-%m-%d %H:%M:%S") 成功下载v2ray二进制文件" >> ${logfile}
+				killall -q -9 v2ray
 	
-			unzip -o v2ray-linux-"$ARCH"*.zip -d $bin_dir/v2ray-v"$v2ray_new_version"-linux-"$ARCH"/
-			mv $bin_dir/v2ray-v"$v2ray_new_version"-linux-"$ARCH"/v2ray /usr/bin/v2ray/v2ray
-			mv $bin_dir/v2ray-v"$v2ray_new_version"-linux-"$ARCH"/v2ctl /usr/bin/v2ray/v2ctl
-			mv $bin_dir/v2ray-v"$v2ray_new_version"-linux-"$ARCH"/geoip.dat /usr/bin/v2ray/geoip.dat
-			mv $bin_dir/v2ray-v"$v2ray_new_version"-linux-"$ARCH"/geosite.dat /usr/bin/v2ray/geosite.dat
-			rm -rf $bin_dir/v2ray*.zip
-			rm -rf $bin_dir/v2ray-v"$v2ray_new_version"-linux-"$ARCH"
-			if [ -f "/usr/bin/v2ray/v2ray" ]; then
-				chmod +x /usr/bin/v2ray/v2*  && echo "$(date "+%Y-%m-%d %H:%M:%S") 成功下载v2ray二进制文件" >> ${logfile}
-				/etc/init.d/shadowsocksr restart
+				unzip -o v2ray-linux-"$ARCH"*.zip -d $bin_dir/v2ray-v"$v2ray_new_version"-linux-"$ARCH"/
+				mv $bin_dir/v2ray-v"$v2ray_new_version"-linux-"$ARCH"/v2ray /usr/bin/v2ray/v2ray
+				mv $bin_dir/v2ray-v"$v2ray_new_version"-linux-"$ARCH"/v2ctl /usr/bin/v2ray/v2ctl
+				mv $bin_dir/v2ray-v"$v2ray_new_version"-linux-"$ARCH"/geoip.dat /usr/bin/v2ray/geoip.dat
+				mv $bin_dir/v2ray-v"$v2ray_new_version"-linux-"$ARCH"/geosite.dat /usr/bin/v2ray/geosite.dat
+				rm -rf $bin_dir/v2ray*.zip
+				rm -rf $bin_dir/v2ray-v"$v2ray_new_version"-linux-"$ARCH"
+				if [ -f "/usr/bin/v2ray/v2ray" ]; then
+					chmod +x /usr/bin/v2ray/v2*
+					/etc/init.d/shadowsocksr restart
+				fi
 			else
 				echo "$(date "+%Y-%m-%d %H:%M:%S") 下载v2ray二进制文件失败，请重试！" >> ${logfile}
 			fi
+
+
 		}
 
 		download_binary
