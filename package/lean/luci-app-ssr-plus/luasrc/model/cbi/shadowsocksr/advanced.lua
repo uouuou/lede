@@ -52,7 +52,7 @@ for _,key in pairs(key_table) do o:value(key,server_table[key]) end
 o.default = "nil"
 o.rmempty = false
 
-o = s:option(Value, "local_port", translate("Local Port"), translate("V2ray The proxy port is the current port + 1."))
+o = s:option(Value, "local_port", translate("Local Port"))
 o.datatype = "port"
 o.default = 1080
 o.rmempty = false

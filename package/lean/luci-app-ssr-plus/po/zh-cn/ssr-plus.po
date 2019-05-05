@@ -557,8 +557,5 @@ msgstr "文件已保存到"
 msgid "No specify upload file."
 msgstr "未指定上传文件"
 
-msgid "V2ray The proxy port is the current port + 1."
-msgstr "V2ray代理端口为当前端口+1,例当前端口为1080+1=1081"
-
 msgid "Enable V2ray Update"
 msgstr "启用V2ray自动升级"
