@@ -397,7 +397,7 @@ define DvbFrontend
   SUBMENU:=$(DVB_MENU)
   KCONFIG:= \
 	$2
-  DEPENDS:=+kmod-i2c-core +kmod-dvb-core +kmod-i2c-mux +kmod-regmap
+  DEPENDS:=+kmod-i2c-core +kmod-dvb-core +kmod-i2c-mux +kmod-regmap-core +kmod-regmap-i2c
   FILES:=$(LINUX_DIR)/drivers/media/dvb-frontends/$1.ko
   AUTOLOAD:=$(call AutoProbe,$1)
 endef
@@ -667,7 +667,7 @@ endef
 define KernelPackage/media-tuner-e4000
   TITLE:=Elonics E4000 silicon tuner
   $(call MediaTuner,e4000,CONFIG_MEDIA_TUNER_E4000)
-  DEPENDS+=+kmod-regmap +kmod-video-core
+  DEPENDS+=+kmod-regmap-core +kmod-regmap-i2c +kmod-video-core
 endef
 
 define KernelPackage/media-tuner-e4000/description
@@ -712,7 +712,7 @@ $(eval $(call KernelPackage,media-tuner-fc0013))
 define KernelPackage/media-tuner-fc2580
   TITLE:=FCI FC2580 silicon tuner
   $(call MediaTuner,fc2580,CONFIG_MEDIA_TUNER_FC2580)
-  DEPENDS+=+LINUX_4_4:kmod-regmap +LINUX_4_4:kmod-video-core
+  DEPENDS+=+LINUX_4_4:kmod-regmap-core +kmod-regmap-i2c +LINUX_4_4:kmod-video-core
 endef
 
 define KernelPackage/media-tuner-fc2580/description
@@ -724,7 +724,7 @@ $(eval $(call KernelPackage,media-tuner-fc2580))
 define KernelPackage/media-tuner-it913x
   TITLE:=ITE Tech IT913x silicon tuner
   $(call MediaTuner,it913x,CONFIG_MEDIA_TUNER_IT913X)
-  DEPENDS+=+kmod-regmap
+  DEPENDS+=+kmod-regmap-core +kmod-regmap-i2c
 endef
 
 define KernelPackage/media-tuner-it913x/description
@@ -736,7 +736,7 @@ $(eval $(call KernelPackage,media-tuner-it913x))
 define KernelPackage/media-tuner-si2157
   TITLE:=Silicon Labs Si2157 silicon tuner
   $(call MediaTuner,si2157,CONFIG_MEDIA_TUNER_SI2157)
-  DEPENDS+=+kmod-regmap
+  DEPENDS+=+kmod-regmap-core +kmod-regmap-i2c
 endef
 
 define KernelPackage/media-tuner-si2157/description
@@ -748,7 +748,7 @@ $(eval $(call KernelPackage,media-tuner-si2157))
 define KernelPackage/media-tuner-av201x
   TITLE:=Airoha Technology AV201x silicon tuner
   $(call MediaTuner,av201x,CONFIG_MEDIA_TUNER_AV201X)
-  DEPENDS+=+kmod-regmap
+  DEPENDS+=+kmod-regmap-core +kmod-regmap-i2c
 endef
 
 define KernelPackage/media-tuner-av201x/description
@@ -900,7 +900,7 @@ $(eval $(call KernelPackage,media-tuner-simple))
 define KernelPackage/media-tuner-tda18212
   TITLE:=NXP TDA18212 silicon tuner
   $(call MediaTuner,tda18212,CONFIG_MEDIA_TUNER_TDA18212)
-  DEPENDS+=+kmod-regmap
+  DEPENDS+=+kmod-regmap-core +kmod-regmap-i2c
 endef
 
 define KernelPackage/media-tuner-tda18212/description
@@ -991,7 +991,7 @@ $(eval $(call KernelPackage,media-tuner-tea5767))
 define KernelPackage/media-tuner-tua9001
   TITLE:=Infineon TUA 9001 silicon tuner
   $(call MediaTuner,tua9001,CONFIG_MEDIA_TUNER_TUA9001)
-DEPENDS+=+LINUX_4_4:kmod-regmap
+DEPENDS+=+LINUX_4_4:kmod-regmap-core +kmod-regmap-i2c
 endef
 
 define KernelPackage/media-tuner-tua9001/description

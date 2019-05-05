@@ -28,6 +28,7 @@ kcp_process=$5
 local_process=$6
 pdnsd_process=$7
 dnsforwarder_process=$8
+ssserver_process=$10
 if  [ -z "$pdnsd_process" ] ;then
 pdnsd_process=0
 fi
@@ -82,6 +83,7 @@ do
 			fi
 #server
       if [ $server_process_count -gt 0 ] ;then
+	  if [ $ssserver_process -eq 1 ] ;then
       icount=`ps -w  | grep ssr-server |grep -v grep| wc -l`
       if [ $icount -lt $server_process_count ]  #如果进程挂掉就重启它
       then
@@ -91,7 +93,20 @@ do
       do
        /usr/bin/ssr-server -c /var/etc/shadowsocksr_$i.json -u -f /var/run/ssr-server$i.pid   
       done  
-      fi   
+      fi
+	  elif [ $ssserver_process -eq 2 ] ;then
+      icount=`ps -w  | grep ss-server |grep -v grep| wc -l`
+      if [ $icount -lt $server_process_count ]  #如果进程挂掉就重启它
+      then
+      logger -t "$NAME" "ss server error.restart!"
+      killall -q -9 ss-server 
+      for i in `seq $server_process_count`
+      do
+       /usr/bin/ss-server -c /var/etc/shadowsocksr_$i.json -u -f /var/run/ss-server$i.pid   
+      done
+	  fi
+      fi
+	  
       fi
 #kcptun
       if [ $kcp_process -gt 0 ] ;then
@@ -105,7 +120,7 @@ do
       fi   
       fi
 #local
-      if [ $local_process -gt 0 ] ;then
+      if [ $local_process -eq 1 ] ;then
       icount=`ps -w  | grep ssr-local |grep -v grep| wc -l`
       if [ $icount -lt $local_process ]  #如果进程挂掉就重启它
       then
@@ -113,6 +128,28 @@ do
       killall -q -9 ssr-local
 
 			( /usr/bin/ssr-local -c /var/etc/shadowsocksr_s.json -u -l $sock5_port -f /var/run/ssr-local.pid &)
+      fi   
+      fi
+#local
+      if [ $local_process -eq 2 ] ;then
+      icount=`ps -w  | grep ss-local |grep -v grep| wc -l`
+      if [ $icount -lt $local_process ]  #如果进程挂掉就重启它
+      then
+      logger -t "$NAME" "ss local error.restart!"
+      killall -q -9 ss-local
+
+			( /usr/bin/ss-local -c /var/etc/shadowsocksr_s.json -u -l $sock5_port -f /var/run/ssr-local.pid &)
+      fi   
+      fi
+#local
+      if [ $local_process -eq 3 ] ;then
+      icount=`ps -w  | grep v2ray |grep -v grep| wc -l`
+      if [ $icount -lt $local_process ]  #如果进程挂掉就重启它
+      then
+      logger -t "$NAME" "v2ray local error.restart!"
+      killall -q -9 v2ray
+
+			( /usr/bin/v2ray/v2ray -config /var/etc/v2-ssr-local.json >/dev/null 2>&1 &)
       fi   
       fi
 #dnsforwarder

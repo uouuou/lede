@@ -3,8 +3,7 @@ local json = require "luci.jsonc"
 local server_section = arg[1]
 local proto = arg[2] 
 local local_port = arg[3]
-local socks_port = local_port + 1
-local http_port = local_port + 2
+local socks_port = arg[4]+1
 
 local server = ucursor:get_all("shadowsocksr", server_section)
 
@@ -35,10 +34,6 @@ local v2ray = {
 				auth = "noauth",
 				udp = true
 			}
-		},
-		{
-			protocol = "http",
-			port = http_port	
 		}
 	} or nil,
     -- 传出连接
@@ -95,7 +90,8 @@ local v2ray = {
             } or nil
         },
         mux = {
-            enabled = (server.mux == "1") and true or false
+            enabled = (server.mux == "1") and true or false,
+            concurrency = tonumber(server.concurrency)
       }
     },
 

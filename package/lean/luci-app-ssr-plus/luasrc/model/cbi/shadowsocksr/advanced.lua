@@ -28,6 +28,9 @@ o.rmempty = false
 o = s:option(Flag, "enable_switch", translate("Enable Auto Switch"))
 o.rmempty = false
 
+o = s:option(Flag, "v2ray_update", translate("Enable V2ray Update"))
+o.rmempty = false
+
 o = s:option(Value, "switch_time", translate("Switch check cycly(second)"))
 o.datatype = "uinteger"
 o:depends("enable_switch", "1")
@@ -49,7 +52,7 @@ for _,key in pairs(key_table) do o:value(key,server_table[key]) end
 o.default = "nil"
 o.rmempty = false
 
-o = s:option(Value, "local_port", translate("Local Port"))
+o = s:option(Value, "local_port", translate("Local Port"), translate("V2ray The proxy port is the current port + 1."))
 o.datatype = "port"
 o.default = 1080
 o.rmempty = false
