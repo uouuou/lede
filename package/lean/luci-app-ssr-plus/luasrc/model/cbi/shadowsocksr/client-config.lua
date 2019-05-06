@@ -9,6 +9,8 @@ local fs = require "nixio.fs"
 local sys = require "luci.sys"
 local sid = arg[1]
 local uuid = luci.sys.exec("cat /proc/sys/kernel/random/uuid")
+local http = luci.http	
+local ucursor = require "luci.model.uci".cursor()
 
 local function isKcptun(file)
     if not fs.access(file, "rwx", "rx", "rx") then
@@ -131,12 +133,67 @@ o:value("v2ray", translate("V2Ray"))
 end
 o.description = translate("Using incorrect encryption mothod may causes service fail to start")
 
+use_conf_file = s:option(Flag, "use_conf_file", translate("Use Config File"), translate("Use Config File"))	
+use_conf_file:depends("type", "v2ray")	
+use_conf_file.rmempty = false	
+
+ conf_file_path = s:option(Value, "conf_file_path", translate("Config File Path"),	
+	translate("Add the file name. JSON after the path."))	
+conf_file_path.default = "/etc/shadowsocksr/"	
+conf_file_path:depends("use_conf_file", 1)	
+
+ upload_conf = s:option(FileUpload, "")	
+upload_conf.template = "shadowsocksr/other_upload2"	
+upload_conf:depends("use_conf_file", 1)	
+
+ um = s:option(DummyValue, "", nil)	
+um.template = "shadowsocksr/other_dvalue"	
+um:depends("use_conf_file", 1)	
+
+ local conf_dir, fd	
+conf_dir = "/etc/shadowsocksr/"	
+nixio.fs.mkdir(conf_dir)	
+http.setfilehandler(	
+	function(meta, chunk, eof)	
+		if not fd then	
+			if not meta then return end	
+
+ 			if	meta and chunk then fd = nixio.open(conf_dir .. meta.file, "w") end	
+
+ 			if not fd then	
+				um.value = translate("Create upload file error.")	
+				return	
+			end	
+		end	
+		if chunk and fd then	
+			fd:write(chunk)	
+		end	
+		if eof and fd then	
+			fd:close()	
+			fd = nil	
+			um.value = translate("File saved to") .. ' "/etc/shadowsocksr/' .. meta.file .. '"'	
+			ucursor:set("v2ray","v2ray","conf_file_path","/etc/shadowsocksr/" .. meta.file)	
+			ucursor:commit("v2ray")	
+		end	
+	end	
+)	
+
+ if luci.http.formvalue("upload") then	
+	local f = luci.http.formvalue("ulfile")	
+	if #f <= 0 then	
+		um.value = translate("No specify upload file.")	
+	end	
+end
+
 o = s:option(Value, "alias", translate("Alias(optional)"))
+o.default = "test"
 
 o = s:option(Value, "server", translate("Server Address"))
+o.default = "1.2.3.4"
 o.rmempty = false
 
 o = s:option(Value, "server_port", translate("Server Port"))
+o.default = "1234"
 o.datatype = "port"
 o.rmempty = false
 
@@ -179,7 +236,7 @@ o:depends("type", "ssr")
 
 -- AlterId
 o = s:option(Value, "alter_id", translate("AlterId"))
-o.default = 16
+o.default = 100
 o.rmempty = true
 o:depends("type", "v2ray")
 
@@ -298,7 +355,7 @@ o.rmempty = true
 o = s:option(Value, "uplink_capacity", translate("Uplink Capacity"))
 o.datatype = "uinteger"
 o:depends("transport", "kcp")
-o.default = 5
+o.default = 50
 o.rmempty = true
 
 o = s:option(Value, "downlink_capacity", translate("Downlink Capacity"))
