@@ -20,6 +20,8 @@ o = s:option(Flag, "auto_update", translate("Auto Update"))
 o.rmempty = false
 o.description = translate("Auto Update Server subscription, GFW list and CHN route")
 
+o = s:option(Flag, "v2ray_update", translate("Enable V2ray Update"))
+o.rmempty = false
 
 o = s:option(ListValue, "auto_update_time", translate("Update time (every day)"))
 for t = 0,23 do

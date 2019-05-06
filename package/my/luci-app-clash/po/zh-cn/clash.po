@@ -4,56 +4,111 @@ msgstr "Content-Type: text/plain; charset=UTF-8\n"
 msgid "clash"
 msgstr "clash"
 
-msgid "<strong><font color=\"green\">Running</font></strong>"
-msgstr "<strong><font color=\"green\">运行</font></strong>"
+msgid "Server Configuration"
+msgstr "配置文件"
 
-msgid "<strong><font color=\"red\">Not Running</font></strong>"
-msgstr "<strong><font color=\"red\">未运行</font></strong>"
+msgid "Server logs"
+msgstr "服务器日志"
 
-msgid "Settings"
-msgstr "设置"
-
-msgid "General Settings"
-msgstr "基本设置"
+msgid "Logs"
+msgstr "服务器日志"
 
 msgid "Enable"
 msgstr "启用"
 
-msgid "Enable or disable clash server"
-msgstr "启用或禁用clash服务"
+msgid "Enable Clash"
+msgstr "启用 Clash"
 
-msgid "clash conf"
-msgstr "clash配置文件"
+msgid "DNS Servers located in China"
+msgstr "国内DNS服务器"
 
-msgid "clash server"
-msgstr "clash服务配置"
+msgid "DNS Servers located Overseas"
+msgstr "国外DNS服务器"
 
-msgid "clash user"
-msgstr "clash用户配置"
+msgid "Enable BBR"
+msgstr "启用 BBR"
 
-msgid "Server Address"
-msgstr "服务器地址"
+msgid "Bottleneck Bandwidth and Round-trip propagation time (BBR)"
+msgstr "BBR拥塞控制算法可以加强TCP应用表现，但会降低路由器本机上的WIFI吞吐性能"
 
-msgid "Server Port"
-msgstr "服务器端口"
+msgid "Enable DNS"
+msgstr "启用 DNS 加速"
 
-msgid "* Proxy Port"
+msgid "DNS Acceleration & Forwarder"
+msgstr "DNS 加速 & 代理"
+
+msgid "Clash Client"
+msgstr "Clash 客户端"
+
+msgid "DNS Settings"
+msgstr "DNS 设置"
+
+msgid "Server Config"
+msgstr "服务器配置"
+
+msgid "Upload Clash Configuration"
+msgstr "上传 Clash 配置"
+
+msgid "NB: Rename your config file to config.yml before upload. file will save to /etc/clash"
+msgstr "注意：上传之前，请将配置文件重命名为config.yml。文件将保存到 /etc/clash"
+
+msgid "Enable DNS Cache Acceleration and anti ISP DNS pollution"
+msgstr "启用DNS多线程查询、缓存，并防止ISP的DNS广告和域名劫持"
+
+msgid "Domestic DNS Server"
+msgstr "国内上游DNS服务器"
+
+msgid "Global DNS Server"
+msgstr "国外上游DNS服务器"
+
+msgid "* Clash Redir Port"
 msgstr "* 转发端口"
 
-msgid "SOCKS5 Port"
-msgstr "SOCK5代理端口"
+msgid "* Domestic DNS Fowarder"
+msgstr "* 国内代理dns服务器"
 
-msgid "* DNS Server"
-msgstr "* 代理dns服务器"
+msgid "* Global DNS Fowarder"
+msgstr "* 国外代理dns服务器"
 
-msgid "The following parameters are used to set the firewall forwarding rules,Need to be consistent with the clash configuration file"
-msgstr "以下参数用于设置防火墙转发规则,需要与clash配置文件一致"
+msgid "Subcription Url"
+msgstr "订阅URL"
 
-msgid "If you have only one CLASH server IP and can choose different ports, set this bar"
-msgstr "如果你只有一个 CLASH服务器的 ip，却能选择不同端口,就设置此条"
+msgid "Update Subcription"
+msgstr "更新订阅配置"
 
-msgid "Remote CLASH servers provide service ports. If you have multiple IPS available, but the ports are identical, set this"
-msgstr "远程 CLASH 服务器提供服务的端口，如果你有多个 ip 可用,但端口一致，就设置这个"
+msgid "Update Configuration"
+msgstr "更新配置文件"
 
-msgid "Local proxy port"
-msgstr "本地代理端口"
+msgid "Update time (every day)"
+msgstr "更新时间 (每天)"
+
+msgid "Auto Update"
+msgstr "自动更新"
+
+msgid "After clash start running, wait a moment for servers to resolve,enjoy"
+msgstr "运行后，等待服务器传播"
+
+msgid "Clash config redir-port: 7892"
+msgstr "转发端口：7892"
+
+msgid "Domestic DNS Server Fowarder"
+msgstr "国内DNS代理服务器地址"
+
+msgid "Global DNS Server Fowarder"
+msgstr "国外DNS代理服务器地址"
+
+msgid "Server Subscription Address"
+msgstr "服务器订阅地址"
+
+msgid "Auto Update Server subscription"
+msgstr "自动更新服务器订阅"
+
+msgid "Daily Server subscription update time"
+msgstr "每日服务器订阅更新时间"
+
+msgid "Under Server Config you can manually upload configuration from pc"
+msgstr "在服务器配置可以选择手动上载配置"
+
+msgid "Changes to config file must be made from source"
+msgstr "必须从源文件更改配置文件"
+

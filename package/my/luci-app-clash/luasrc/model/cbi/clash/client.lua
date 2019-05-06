@@ -1,26 +1,68 @@
--- Copyright (C) 2018 dz <dingzhong110@gmail.com>
--- Licensed to the public under the GNU General Public License v3.
+--
+local NXFS = require "nixio.fs"
+local SYS  = require "luci.sys"
+local HTTP = require "luci.http"
+local DISP = require "luci.dispatcher"
+local UTIL = require "luci.util"
 
-local fs = require "nixio.fs"
-local conffile = "/etc/clash/config.yml"
 
-f = SimpleForm("server", translate("Clash Settings"))
+m = Map("clash", translate("Clash Client"))
+m:section(SimpleSection).template  = "clash/status"
+s = m:section(TypedSection, "clash")
+s.anonymous = true
 
-t = f:field(TextValue, "conf")
-t.rmempty = true
-t.rows = 20
-function t.cfgvalue()
-	return fs.readfile(conffile) or ""
+
+
+o = s:option( Flag, "enable")
+o.title = translate("Enable Clash")
+o.default = 0
+o.rmempty = false
+o.description = translate("After clash start running, wait a moment for servers to resolve,enjoy")
+
+
+
+o = s:option(Value, "proxy_port")
+o.title = translate("* Clash Redir Port")
+o.default = 7892
+o.datatype = "port"
+o.rmempty = false
+o.description = translate("Clash config redir-port: 7892")
+
+
+o = s:option(Flag, "auto_update", translate("Auto Update"))
+o.rmempty = false
+o.description = translate("Auto Update Server subscription")
+
+
+o = s:option(ListValue, "auto_update_time", translate("Update time (every day)"))
+for t = 0,23 do
+o:value(t, t..":00")
+end
+o.default=0
+o.rmempty = false
+
+o = s:option(Value, "subscribe_url")
+o.title = translate("Subcription Url")
+o.description = translate("Server Subscription Address")
+o.rmempty = true
+
+o = s:option(Button,"update")
+o.title = translate("Update Subcription")
+o.inputtitle = translate("Update Configuration")
+o.inputstyle = "reload"
+o.write = function()
+  os.execute("mv /etc/clash/config.yml /etc/clash/config.bak")
+  SYS.call("bash /usr/share/clash/clash.sh >>/tmp/clash.log 2>&1")
+  HTTP.redirect(DISP.build_url("admin", "services", "clash"))
 end
 
-function f.handle(self, state, data)
-	if state == FORM_VALID then
-		if data.conf then
-			fs.writefile(conffile, data.conf:gsub("\r\n", "\n"))
-			luci.sys.call("/etc/init.d/clash restart")
-		end
-	end
-	return true
+
+local apply = luci.http.formvalue("cbi.apply")
+if apply then
+	os.execute("/etc/init.d/clash restart >/dev/null 2>&1 &")
 end
 
-return f
+
+
+return m
+

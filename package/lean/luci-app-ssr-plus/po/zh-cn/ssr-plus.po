@@ -169,6 +169,12 @@ msgstr "别名"
 msgid "SOCKS5 Proxy"
 msgstr "SOCKS5代理"
 
+msgid "SSOCKS5 Proxy"
+msgstr "SS SOCKS5代理"
+
+msgid "V2SOCKS5 Proxy"
+msgstr "V2RAY SOCKS5代理"
+
 msgid "Server"
 msgstr "服务器"
 
@@ -189,6 +195,9 @@ msgstr "TCP透明代理"
 
 msgid "Global SSR Server"
 msgstr "SSR服务端"
+
+msgid "Global SS Server"
+msgstr "SS服务端"
 
 msgid "DNS Tunnel"
 msgstr "DNS 隧道"
@@ -547,3 +556,6 @@ msgstr "文件已保存到"
 
 msgid "No specify upload file."
 msgstr "未指定上传文件"
+
+msgid "Enable V2ray Update"
+msgstr "启用V2ray自动升级"

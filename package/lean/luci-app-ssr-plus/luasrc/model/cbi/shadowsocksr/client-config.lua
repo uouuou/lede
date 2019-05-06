@@ -9,8 +9,6 @@ local fs = require "nixio.fs"
 local sys = require "luci.sys"
 local sid = arg[1]
 local uuid = luci.sys.exec("cat /proc/sys/kernel/random/uuid")
-local http = luci.http
-local ucursor = require "luci.model.uci".cursor()
 
 local function isKcptun(file)
     if not fs.access(file, "rwx", "rx", "rx") then
@@ -133,67 +131,12 @@ o:value("v2ray", translate("V2Ray"))
 end
 o.description = translate("Using incorrect encryption mothod may causes service fail to start")
 
-use_conf_file = s:option(Flag, "use_conf_file", translate("Use Config File"), translate("Use Config File"))
-use_conf_file:depends("type", "v2ray")
-use_conf_file.rmempty = false
-
-conf_file_path = s:option(Value, "conf_file_path", translate("Config File Path"),
-	translate("Add the file name. JSON after the path."))
-conf_file_path.default = "/etc/shadowsocksr/"
-conf_file_path:depends("use_conf_file", 1)
-
-upload_conf = s:option(FileUpload, "")
-upload_conf.template = "cbi/other_upload2"
-upload_conf:depends("use_conf_file", 1)
-
-um = s:option(DummyValue, "", nil)
-um.template = "cbi/other_dvalue"
-um:depends("use_conf_file", 1)
-
-local conf_dir, fd
-conf_dir = "/etc/shadowsocksr/"
-nixio.fs.mkdir(conf_dir)
-http.setfilehandler(
-	function(meta, chunk, eof)
-		if not fd then
-			if not meta then return end
-
-			if	meta and chunk then fd = nixio.open(conf_dir .. meta.file, "w") end
-
-			if not fd then
-				um.value = translate("Create upload file error.")
-				return
-			end
-		end
-		if chunk and fd then
-			fd:write(chunk)
-		end
-		if eof and fd then
-			fd:close()
-			fd = nil
-			um.value = translate("File saved to") .. ' "/etc/shadowsocksr/' .. meta.file .. '"'
-			ucursor:set("v2ray","v2ray","conf_file_path","/etc/shadowsocksr/" .. meta.file)
-			ucursor:commit("v2ray")
-		end
-	end
-)
-
-if luci.http.formvalue("upload") then
-	local f = luci.http.formvalue("ulfile")
-	if #f <= 0 then
-		um.value = translate("No specify upload file.")
-	end
-end
-
 o = s:option(Value, "alias", translate("Alias(optional)"))
-o.default = "test"
 
 o = s:option(Value, "server", translate("Server Address"))
-o.default = "1.2.3.4"
 o.rmempty = false
 
 o = s:option(Value, "server_port", translate("Server Port"))
-o.default = "1234"
 o.datatype = "port"
 o.rmempty = false
 
@@ -236,7 +179,7 @@ o:depends("type", "ssr")
 
 -- AlterId
 o = s:option(Value, "alter_id", translate("AlterId"))
-o.default = 100
+o.default = 16
 o.rmempty = true
 o:depends("type", "v2ray")
 
@@ -258,6 +201,7 @@ o:value("tcp", "TCP")
 o:value("kcp", "mKCP")
 o:value("ws", "WebSocket")
 o:value("h2", "HTTP/2")
+o:value("quic", "QUIC")
 o.rmempty = true
 o:depends("type", "v2ray")
 
@@ -304,6 +248,29 @@ o = s:option(Value, "h2_path", translate("HTTP/2 Path"))
 o:depends("transport", "h2")
 o.rmempty = true
 
+-- [[ QUIC部分 ]]--
+
+o = s:option(ListValue, "quic_security", translate("QUIC Security"))
+o:depends("transport", "quic")
+o.rmempty = true
+o:value("none", translate("None"))
+o:value("aes-128-gcm", translate("aes-128-gcm"))
+o:value("chacha20-poly1305", translate("chacha20-poly1305"))
+
+o = s:option(Value, "quic_key", translate("QUIC Key"))
+o:depends("transport", "quic")
+o.rmempty = true
+
+o = s:option(ListValue, "quic_guise", translate("Header"))
+o:depends("transport", "quic")
+o.rmempty = true
+o:value("none", translate("None"))
+o:value("srtp", translate("VideoCall (SRTP)"))
+o:value("utp", translate("BitTorrent (uTP)"))
+o:value("wechat-video", translate("WechatVideo"))
+o:value("dtls", "DTLS 1.2")
+o:value("wireguard", "WireGuard")
+
 -- [[ mKCP部分 ]]--
 
 o = s:option(ListValue, "kcp_guise", translate("Camouflage Type"))
@@ -331,13 +298,13 @@ o.rmempty = true
 o = s:option(Value, "uplink_capacity", translate("Uplink Capacity"))
 o.datatype = "uinteger"
 o:depends("transport", "kcp")
-o.default = 20
+o.default = 5
 o.rmempty = true
 
 o = s:option(Value, "downlink_capacity", translate("Downlink Capacity"))
 o.datatype = "uinteger"
 o:depends("transport", "kcp")
-o.default = 100
+o.default = 20
 o.rmempty = true
 
 o = s:option(Value, "read_buffer_size", translate("Read Buffer Size"))
@@ -370,8 +337,14 @@ o:depends("type", "v2ray")
 -- [[ Mux ]]--
 o = s:option(Flag, "mux", translate("Mux"))
 o.rmempty = true
-o.default = "1"
+o.default = "0"
 o:depends("type", "v2ray")
+
+o = s:option(Value, "concurrency", translate("Concurrency"))
+o.datatype = "uinteger"
+o.rmempty = true
+o.default = "8"
+o:depends("mux", "1")
 
 o = s:option(Flag, "fast_open", translate("TCP Fast Open"))
 o.rmempty = true
@@ -381,16 +354,16 @@ o:depends("type", "ss")
 
 o = s:option(Flag, "switch_enable", translate("Enable Auto Switch"))
 o.rmempty = false
-o.default = "0"
+o.default = "1"
 
 o = s:option(Value, "local_port", translate("Local Port"))
 o.datatype = "port"
 o.default = 1234
 o.rmempty = false
 
-if nixio.fs.access("/usr/bin/ssr-kcptun") then
+if nixio.fs.access("/usr/bin/kcptun-client") then
 
-kcp_enable = s:option(Flag, "kcp_enable", translate("KcpTun Enable"), translate("bin:/usr/bin/ssr-kcptun"))
+kcp_enable = s:option(Flag, "kcp_enable", translate("KcpTun Enable"), translate("bin:/usr/bin/kcptun-client"))
 kcp_enable.rmempty = true
 kcp_enable.default = "0"
 kcp_enable:depends("type", "ssr")
@@ -400,7 +373,7 @@ o = s:option(Value, "kcp_port", translate("KcpTun Port"))
 o.datatype = "port"
 o.default = 4000
 function o.validate(self, value, section)
-		local kcp_file="/usr/bin/ssr-kcptun"
+		local kcp_file="/usr/bin/kcptun-client"
 		local enable = kcp_enable:formvalue(section) or kcp_enable.disabled
 		if enable == kcp_enable.enabled then
     if not fs.access(kcp_file)  then

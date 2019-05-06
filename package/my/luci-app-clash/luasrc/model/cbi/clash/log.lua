@@ -1,15 +1,29 @@
-local fs = require "nixio.fs"
-local conffile = "/tmp/clash.log"
+--
+local NXFS = require "nixio.fs"
+local SYS  = require "luci.sys"
+local HTTP = require "luci.http"
+local DISP = require "luci.dispatcher"
+local UTIL = require "luci.util"
 
-f = SimpleForm("logview")
 
-t = f:field(TextValue, "conf")
-t.rmempty = true
-t.rows = 20
-function t.cfgvalue()
-  luci.sys.exec("[ -f /tmp/clash.log ] && sed '1!G;h;$!d' /tmp/clash.log > /tmp/clash.log")
-	return fs.readfile(conffile) or ""
+m = Map("clash", translate("Server logs"))
+s = m:section(TypedSection, "clash")
+s.anonymous = true
+s.addremove=false
+
+
+
+local clog = "/tmp/clash.log"
+log = s:option(TextValue, "clog")
+log.readonly=true
+log.description = translate("")
+log.rows = 29
+log.wrap = "off"
+log.cfgvalue = function(self, section)
+	return NXFS.readfile(clog) or ""
 end
-t.readonly="readonly"
+log.write = function(self, section, value)
+	NXFS.writefile(clog, value:gsub("\r\n", "\n"))
+end
 
-return f
+return m
