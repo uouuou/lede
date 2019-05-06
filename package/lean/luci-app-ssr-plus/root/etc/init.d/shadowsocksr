@@ -27,7 +27,6 @@ kcp_flag=0
 pdnsd_enable_flag=0
 dnsforwarder_enable_flag=0
 switch_enable=0
-ssserver_enable=0
 switch_server=$1
 MAXFD=32768
 CRON_FILE=/etc/crontabs/root
@@ -48,8 +47,9 @@ add_cron()
 	sed -i '/ssrplus.log/d' $CRON_FILE
 	[ -n "$(grep -w "/usr/share/shadowsocksr/subscribe.sh" $CRON_FILE)" ] && sed -i '/\/usr\/share\/shadowsocksr\/subscribe.sh/d' $CRON_FILE
 	[ $(uci_get_by_type server_subscribe auto_update 0) -eq 1 ] && echo "0 $(uci_get_by_type server_subscribe auto_update_time) * * * /usr/share/shadowsocksr/subscribe.sh" >> $CRON_FILE
-	[ -n "$(grep -w "/usr/share/shadowsocksr/v2ray_update.sh" $CRON_FILE)" ] && sed -i '/\/usr\/share\/shadowsocksr\/v2ray_update.sh/d' $CRON_FILE
-	[ $(uci_get_by_type server_subscribe v2ray_update 0) -eq 1 ] && echo "0 4 * * * /usr/share/shadowsocksr/v2ray_update.sh" >> $CRON_FILE
+	if [ usr/bin/v2ray/v2ray ] ;then
+		[ -z "$(grep -w "/usr/share/shadowsocksr/v2ray_update.sh" $CRON_FILE)" ] && echo "0 4 * * * /usr/share/shadowsocksr/v2ray_update.sh" >> $CRON_FILE
+	fi
 	[ -z "$(grep -w "/usr/share/shadowsocksr/update.sh" $CRON_FILE)" ] && echo "0 5 * * 0 /usr/share/shadowsocksr/update.sh" >> $CRON_FILE
 	crontab $CRON_FILE
 }
@@ -135,7 +135,6 @@ EOF
 			cp $conf_file_path /var/etc/v2-ssr-retcp.json
 		else
 			lua /usr/share/shadowsocksr/genv2config.lua $GLOBAL_SERVER tcp $(uci_get_by_name $1 local_port) > /var/etc/v2-ssr-retcp.json
-			sed -i 's/\\//g' /var/etc/v2-ssr-retcp.json
 		fi
 	fi
 }
@@ -427,8 +426,7 @@ start_redir() {
 			$ucmd -c $last_config_file $ARG_OTA -U -f /var/run/ssr-reudp.pid >/dev/null 2>&1
 		elif [ "$utype" == "v2ray" ] ; then
 			lua /usr/share/shadowsocksr/genv2config.lua $UDP_RELAY_SERVER udp $(uci_get_by_name $UDP_RELAY_SERVER local_port) > /var/etc/v2-ssr-reudp.json
-			sed -i 's/\\//g' /var/etc/v2-ssr-reudp.json
-			$ucmd -config /var/etc/v2-ssr-reudp.json >/dev/null 2>&1 & 
+			$ucmd -config /var/etc/v2-ssr-reudp.json >/dev/null 2>&1 &   
 		fi
 	fi
 
@@ -484,21 +482,8 @@ gen_service_file() {
 		fastopen="true";
 	else
 		fastopen="false";
-	fi
+	fi 
 	
-	local sertype=$(uci_get_by_name $1 type)
-	if [ "$sertype" == "ss" ] ;then
-	cat <<-EOF >$2
-		{
-		    "server": "0.0.0.0",
-		    "server_port": $(uci_get_by_name $1 server_port),
-		    "password": "$(uci_get_by_name $1 password)",
-		    "timeout": $(uci_get_by_name $1 timeout 60),
-		    "method": "$(uci_get_by_name $1 encrypt_method)",
-		    "fast_open": $fastopen
-		}
-EOF
-	elif [ "$sertype" == "ssr" ] ;then
 	cat <<-EOF >$2
 		{
 		    "server": "0.0.0.0",
@@ -513,8 +498,6 @@ EOF
 		    "fast_open": $fastopen
 		}
 EOF
-	fi
-	
 }
 
 start_service() {
@@ -525,17 +508,8 @@ start_service() {
 		iptables -t filter -I INPUT  -j SSR-SERVER-RULE
 	fi
 
-	local sertype=$(uci_get_by_name $1 type)
-	if [ "$sertype" == "ss" ] ;then
-		sercmd="ss-server"
-		ssserver_enable=2
-	elif [ "$sertype" == "ssr" ] ;then
-		sercmd="ssr-server"
-		ssserver_enable=1
-    fi
-
 	gen_service_file $1 /var/etc/${NAME}_${server_count}.json
-	/usr/bin/$sercmd -c /var/etc/${NAME}_${server_count}.json -u -f /var/run/$sercmd${server_count}.pid >/dev/null 2>&1
+	/usr/bin/ssr-server -c /var/etc/${NAME}_${server_count}.json -u -f /var/run/ssr-server${server_count}.pid >/dev/null 2>&1
 	iptables -t filter -A SSR-SERVER-RULE -p tcp --dport $(uci_get_by_name $1 server_port) -j ACCEPT
 	iptables -t filter -A SSR-SERVER-RULE -p udp --dport $(uci_get_by_name $1 server_port) -j ACCEPT
 	return 0
@@ -572,32 +546,14 @@ start_server() {
 
 start_local() {
 	local local_server=$(uci_get_by_type socks5_proxy server)
-	local stype=$(uci_get_by_name $local_server type)
-	if [ "$stype" == "ss" ] ;then
-		lcmd="/usr/bin/ss-local"
-	elif [ "$stype" == "ssr" ] ;then
-		lcmd="/usr/bin/ssr-local"
-    fi
 	[ "$local_server" = "nil" ] && return 1
 	mkdir -p /var/run /var/etc
-		gen_config_file $local_server 2
-	if [ "$stype" == "v2ray" ] ;then
-		lua /usr/share/shadowsocksr/genv2config1.lua $local_server tcp $(uci_get_by_name $local_server local_port) $(uci_get_by_type socks5_proxy local_port 1080) > /var/etc/v2-ssr-local.json
-		sed -i 's/\\//g' /var/etc/v2-ssr-local.json
-		/usr/bin/v2ray/v2ray -config /var/etc/v2-ssr-local.json >/dev/null 2>&1 & 
-	else
-		$lcmd -c $CONFIG_SOCK5_FILE -u  \
-			-l $(uci_get_by_type socks5_proxy local_port 1080) \
-			-b $(uci_get_by_type socks5_proxy local_address 0.0.0.0) \
-			-f /var/run/ssr-local.pid >/dev/null 2>&1
-	fi
-	if [ "$stype" == "v2ray" ] ;then
-	local_enable=3
-	elif [ "$stype" == "ss" ] ;then
-	local_enable=2
-	elif [ "$stype" == "ssr" ] ;then
-	local_enable=1
-	fi
+	gen_config_file $local_server 2
+	/usr/bin/ssr-local -c $CONFIG_SOCK5_FILE -u  \
+		-l $(uci_get_by_type socks5_proxy local_port 1080) \
+		-b $(uci_get_by_type socks5_proxy local_address 0.0.0.0) \
+		-f /var/run/ssr-local.pid >/dev/null 2>&1
+	local_enable=1	
 }
 
 rules() {
@@ -648,11 +604,11 @@ EOF
 	start_local
 	
 	if [ $(uci_get_by_type global monitor_enable) = 1 ] ;then
-		let total_count=server_count+redir_tcp+redir_udp+tunnel_enable+kcp_enable_flag+local_enable+pdnsd_enable_flag+dnsforwarder_enable_flag+switch_enable+ssserver_enable
+		let total_count=server_count+redir_tcp+redir_udp+tunnel_enable+kcp_enable_flag+local_enable+pdnsd_enable_flag+dnsforwarder_enable_flag+switch_enable
 
 		if [ $total_count -gt 0 ] ;then
 			#param:server(count) redir_tcp(0:no,1:yes)  redir_udp tunnel kcp local gfw
-			service_start /usr/bin/ssr-monitor $server_count $redir_tcp $redir_udp $tunnel_enable $kcp_enable_flag $local_enable $pdnsd_enable_flag $dnsforwarder_enable_flag $switch_enable $ssserver_enable
+			service_start /usr/bin/ssr-monitor $server_count $redir_tcp $redir_udp $tunnel_enable $kcp_enable_flag $local_enable $pdnsd_enable_flag $dnsforwarder_enable_flag $switch_enable
 		fi
 	fi
 	
@@ -686,10 +642,8 @@ stop() {
 	killall -q -9 ssr-redir
 	killall -q -9 v2ray
 	killall -q -9 ssr-server
-	killall -q -9 ss-server
 	killall -q -9 ssr-kcptun
 	killall -q -9 ssr-local
-	killall -q -9 ss-local
 
 	if [ -f /var/run/pdnsd.pid ] ;then
 		kill $(cat /var/run/pdnsd.pid) >/dev/null 2>&1

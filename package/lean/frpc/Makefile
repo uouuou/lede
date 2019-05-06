@@ -7,7 +7,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=frpc
-PKG_VERSION:=0.27.0
+PKG_VERSION:=0.26.0
 PKG_RELEASE:=2
 
 ifeq ($(ARCH),mipsel)
@@ -60,7 +60,7 @@ define Build/Configure
 endef
 
 define Build/Compile
-	#chmod +x $(PKG_BUILD_DIR)/frpc && upx --lzma $(PKG_BUILD_DIR)/frpc	
+	chmod +x $(PKG_BUILD_DIR)/frpc && upx --lzma $(PKG_BUILD_DIR)/frpc	
 endef
 
 define Package/$(PKG_NAME)/install

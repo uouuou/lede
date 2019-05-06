@@ -1,47 +1,7 @@
 
 config global
+	option koolproxy_mode '1'
+	option koolproxy_acl_default '1'
 	option time_update '4'
-	option koolproxy_port '0'
-	option startup_delay '5'
-	option koolproxy_acl_default '0'
-	option koolproxy_mode '2'
-	option koolproxy_host '1'
-	option koolproxy_rules 'koolproxy.txt daily.txt kp.dat user.txt'
 	option enabled '0'
-
-config rss_rule
-	option name '乘风广告过滤规则'
-	option url 'https://raw.githubusercontent.com/xinggsf/Adblock-Plus-Rule/master/ABP-FX.txt'
-	option file 'ABP-FX.txt'
-	option load '0'
-	option time '2019-04-28 20:58'
-
-config rss_rule
-	option load '1'
-	option name 'AdGuard_DNS'
-	option url 'https://github.com/user1121114685/koolproxyR/blob/master/koolproxyR/koolproxyR/data/rules/AdGuard_DNS.txt'
-
-config rss_rule
-	option load '1'
-	option name 'easylistchina'
-	option url 'https://github.com/user1121114685/koolproxyR/blob/master/koolproxyR/koolproxyR/data/rules/easylistchina.txt'
-
-config rss_rule
-	option load '1'
-	option name 'fanboy-annoyance'
-	option url 'https://github.com/user1121114685/koolproxyR/blob/master/koolproxyR/koolproxyR/data/rules/fanboy-annoyance.txt'
-
-config rss_rule
-	option load '1'
-	option name 'kpr_video_lis'
-	option url 'https://github.com/user1121114685/koolproxyR/blob/master/koolproxyR/koolproxyR/data/rules/kpr_video_list.txt'
-
-config rss_rule
-	option load '1'
-	option name 'kpr_video_list_1'
-	option url 'https://github.com/user1121114685/koolproxyR/blob/master/koolproxyR/koolproxyR/data/rules/kpr_video_list_1.txt'
-
-config rss_rule
-	option load '1'
-	option name 'kpr_our_rule'
-	option url 'https://github.com/user1121114685/koolproxyR_rule_list/blob/master/kpr_our_rule.txt'
+	option startup_delay '0'

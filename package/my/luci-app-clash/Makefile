@@ -1,13 +1,13 @@
-# Copyright (C) 2016 Openwrt.org
 #
-# This is free software, licensed under the Apache License, Version 2.0 .
+#-- Copyright (C) 2019 dz <dingzhong110@gmail.com>
 #
+
 
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=LuCI Support for clash
-LUCI_DEPENDS:=+clash +kmod-ipt-offload +pdnsd-alt +kmod-tcp-bbr @!LINUX_3_18 @!LINUX_4_9
-PKG_VERSION:=0.13.0
+LUCI_DEPENDS:= +clash
+PKG_VERSION:=1.06
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
